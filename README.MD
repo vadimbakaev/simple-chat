@@ -1,6 +1,8 @@
 # simple-chat
 > Simple chat implemented with akka
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/7720263821584b5cb0415c65048f575e)](https://www.codacy.com/manual/vadimbakaev/simple-chat?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=vadimbakaev/simple-chat&amp;utm_campaign=Badge_Grade)
+
 ## Run
 
 To run all test and generate coverage report run:
