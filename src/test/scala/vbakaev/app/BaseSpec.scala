@@ -1,7 +1,18 @@
 package vbakaev.app
 
-import org.scalatest.ParallelTestExecution
+import akka.actor.ActorSystem
+import akka.testkit.TestKit
 import org.scalatest.matchers.should.Matchers
-import org.scalatest.wordspec.AsyncWordSpecLike
+import org.scalatest.wordspec.AnyWordSpecLike
+import org.scalatest.{BeforeAndAfterAll, ParallelTestExecution}
 
-trait BaseSpec extends AsyncWordSpecLike with Matchers with ParallelTestExecution
+abstract class BaseSpec
+    extends TestKit(ActorSystem("BaseSpec"))
+    with AnyWordSpecLike
+    with Matchers
+    with BeforeAndAfterAll
+    with ParallelTestExecution {
+
+  override protected def afterAll(): Unit = TestKit.shutdownActorSystem(system)
+
+}

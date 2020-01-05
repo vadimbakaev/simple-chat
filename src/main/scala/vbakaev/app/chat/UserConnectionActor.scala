@@ -12,47 +12,47 @@ object UserConnectionActor {
   def name(): String         = Prefix + UUID.randomUUID()
 
   sealed trait Protocol
-  case object StreamInit                                      extends Protocol
-  case object StreamAck                                       extends Protocol
-  case object StreamComplete                                  extends Protocol
-  final case class StreamFailure(t: Throwable)                extends Protocol
-  final case class ConnectUser(userConnectionActor: ActorRef) extends Protocol
-  private final case class Message(msg: ByteString)           extends Protocol
+  case object StreamInit                                         extends Protocol
+  case object StreamAck                                          extends Protocol
+  case object StreamComplete                                     extends Protocol
+  final case class StreamFailure(t: Throwable)                   extends Protocol
+  final case class ConnectUser(connectionOutcomeActor: ActorRef) extends Protocol
+  private final case class Message(msg: ByteString)              extends Protocol
 }
 
 class UserConnectionActor extends Actor with Stash with ActorLogging {
 
-  override def receive: Receive = unConfigured
+  override def receive: Receive = waitingForConnection
 
-  val unConfigured: Receive = {
-    case ConnectUser(userConnectionActor) =>
-      log.debug("User connected {}", userConnectionActor)
+  val waitingForConnection: Receive = {
+    case ConnectUser(connectionOutcomeActor) =>
+      log.debug("User connected {}", connectionOutcomeActor)
       unstashAll()
-      context watch userConnectionActor
-      context become connected(userConnectionActor)
+      context watch connectionOutcomeActor
+      context become connected(connectionOutcomeActor)
     case _ =>
       stash()
   }
 
-  def connected(userConnectionActor: ActorRef): Receive = {
+  def connected(connectionOutcomeActor: ActorRef): Receive = {
     case StreamInit =>
       log.debug("Stream Init")
       sender() ! StreamAck
     case StreamComplete =>
       log.debug("Stream complete")
-      userConnectionActor ! Success("complete")
+      connectionOutcomeActor ! Success("complete")
       context stop self
     case StreamFailure(t) =>
       log.warning("Stream failure", t)
-      userConnectionActor ! Failure(t)
+      connectionOutcomeActor ! Failure(t)
       context stop self
     case incomingMessage: ByteString =>
       context.actorSelection(s"../$Prefix*") ! Message(incomingMessage)
       sender() ! StreamAck
     case Message(message) =>
       log.debug("Received message {} from {}", message.utf8String, sender())
-      if (sender() != self) userConnectionActor ! message
-    case Terminated(actor) if actor == userConnectionActor =>
+      if (sender() != self) connectionOutcomeActor ! message
+    case Terminated(actor) if actor == connectionOutcomeActor =>
       context stop self
   }
 

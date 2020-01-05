@@ -3,11 +3,10 @@ package vbakaev.app
 import akka.actor.Status.{Status => _, _}
 import akka.actor._
 import akka.stream.scaladsl.GraphDSL.Implicits._
-import akka.stream.scaladsl.{Flow, GraphDSL, Keep, RunnableGraph, Sink, Source, Tcp}
+import akka.stream.scaladsl._
 import akka.stream.{ClosedShape, CompletionStrategy, OverflowStrategy}
 import akka.util.ByteString
 import com.typesafe.scalalogging.LazyLogging
-import pureconfig.ConfigSource
 import vbakaev.app.chat.UserConnectionActor
 import vbakaev.app.config.AppConfig
 
@@ -63,9 +62,9 @@ object Main extends App with LazyLogging {
                     chatMessageProducer
                   )(Keep.right)
 
-                  val userConnectionSourceActor = incomingConnection.handleWith(chatConnectionHandler)
+                  val connectionOutcomeActor = incomingConnection.handleWith(chatConnectionHandler)
 
-                  userActor ! ConnectUser(userConnectionSourceActor)
+                  userActor ! ConnectUser(connectionOutcomeActor)
               }
 
               tcpConnection ~> tcpConnectionHandler
