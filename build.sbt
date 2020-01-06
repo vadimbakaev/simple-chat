@@ -1,7 +1,7 @@
 lazy val root = (project in file("."))
   .settings(
     name := "simple-chat",
-    version := "0.1",
+    version := "0.2",
     scalaVersion := "2.12.10",
     libraryDependencies ++= {
       object Version {
@@ -9,7 +9,6 @@ lazy val root = (project in file("."))
         val scalaTest    = "3.1.0"
         val mockitoScala = "1.10.2"
         val scalaFmt     = "1.5.1"
-        val cats         = "2.1.0"
         val pureConfig   = "0.12.2"
         val scalaLogging = "3.9.2"
         val logback      = "1.2.3"
@@ -17,7 +16,6 @@ lazy val root = (project in file("."))
 
       Seq(
         "com.geirsson"               %% "scalafmt-core"       % Version.scalaFmt,
-        "org.typelevel"              %% "cats-core"           % Version.cats,
         "com.github.pureconfig"      %% "pureconfig"          % Version.pureConfig,
         "com.typesafe.scala-logging" %% "scala-logging"       % Version.scalaLogging,
         "ch.qos.logback"             % "logback-classic"      % Version.logback,
