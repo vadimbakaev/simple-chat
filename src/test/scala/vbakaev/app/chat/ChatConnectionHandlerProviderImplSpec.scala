@@ -5,9 +5,9 @@ import akka.stream.testkit.TestSubscriber
 import akka.stream.testkit.scaladsl.TestSink
 import akka.util.ByteString
 import vbakaev.app.BaseSpec
+import vbakaev.app.chat.ChatConnectionHandlerProviderImplSpec._
 
 class ChatConnectionHandlerProviderImplSpec extends BaseSpec {
-  import ChatConnectionHandlerProviderImplSpec._
 
   trait Fixture {
     val subject = new ChatConnectionHandlerProviderImpl()

@@ -12,7 +12,6 @@ import vbakaev.app.chat.{ChatConnectionHandlerProvider, ChatConnectionHandlerPro
 import vbakaev.app.config.AppConfig
 
 object Main extends App with LazyLogging {
-  logger.info("Application started")
 
   implicit val actorSystem: ActorSystem       = ActorSystem("simple-chat")
   val provider: ChatConnectionHandlerProvider = new ChatConnectionHandlerProviderImpl()
@@ -41,4 +40,5 @@ object Main extends App with LazyLogging {
     )
     .run()
 
+  logger.info("Application started")
 }
