@@ -6,13 +6,13 @@
 ## Run
 
 To run all test and generate coverage report run:
-```sbtshell
-clean coverage test it:test coverageReport coverageAggregate
+```shell
+sbt clean coverage test coverageReport coverageAggregate
 ```
 
 To start application use:
-```sbtshell
-run
+```shell
+sbt run
 ```
 
 ## Join to chat

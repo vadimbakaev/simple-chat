@@ -14,14 +14,11 @@ trait ChatConnectionHandlerProvider {
 
 }
 
-class ChatConnectionHandlerProviderImpl(
-    generateRandomUUID: () => UUID = UUID.randomUUID
-)(implicit mat: Materializer)
-    extends ChatConnectionHandlerProvider {
+class ChatConnectionHandlerProviderImpl()(implicit mat: Materializer) extends ChatConnectionHandlerProvider {
   private val (sink, source) = MergeHub.source[MessageWrapper].toMat(BroadcastHub.sink[MessageWrapper])(Keep.both).run()
 
   override def connectionHandler(): Flow[ByteString, ByteString, NotUsed] = {
-    val userId = generateRandomUUID()
+    val userId = UUID.randomUUID()
 
     Flow
       .fromFunction(MessageWrapper(userId, _))
