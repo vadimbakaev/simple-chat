@@ -4,9 +4,8 @@ import java.util.UUID
 
 import akka.NotUsed
 import akka.stream.Materializer
-import akka.stream.scaladsl.{BroadcastHub, Flow, Keep, MergeHub}
+import akka.stream.scaladsl.{BroadcastHub, Flow, Keep, MergeHub, Source}
 import akka.util.ByteString
-import vbakaev.app.chat.ChatConnectionHandlerProviderImpl.MessageWrapper
 
 trait ChatConnectionHandlerProvider {
 
@@ -15,20 +14,17 @@ trait ChatConnectionHandlerProvider {
 }
 
 class ChatConnectionHandlerProviderImpl()(implicit mat: Materializer) extends ChatConnectionHandlerProvider {
-  private val (sink, source) = MergeHub.source[MessageWrapper].toMat(BroadcastHub.sink[MessageWrapper])(Keep.both).run()
+  private val (sink, source) =
+    MergeHub.source[(ByteString, UUID)].toMat(BroadcastHub.sink)(Keep.both).run()
 
   override def connectionHandler(): Flow[ByteString, ByteString, NotUsed] = {
     val userId = UUID.randomUUID()
 
-    Flow
-      .fromFunction(MessageWrapper(userId, _))
+    Flow[ByteString]
+      .zip(Source.repeat(userId))
       .via(Flow.fromSinkAndSource(sink, source))
       .collect {
-        case MessageWrapper(senderId, msg) if senderId != userId => msg
+        case (msg, senderId) if senderId != userId => msg
       }
   }
-}
-
-object ChatConnectionHandlerProviderImpl {
-  private final case class MessageWrapper(uuid: UUID, msg: ByteString)
 }
